@@ -6,7 +6,7 @@ gp.fs.0 = ec.gp.GPFunctionSet
 gp.fs.0.name = f0
 
 #Terminals
-gp.fs.0.size = 10
+gp.fs.0.size = 14
 
 gp.fs.0.func.0 = terminals.AgregarMejorVecino
 gp.fs.0.func.0.nc = nc0
@@ -31,23 +31,23 @@ gp.fs.0.func.6.nc = nc0
 
 #Functions
 
-#gp.fs.0.func.9 = functions.IfThenElse
-#gp.fs.0.func.9.nc = nc7
-gp.fs.0.func.7 = functions.IfThen
-gp.fs.0.func.7.nc = nc3
-gp.fs.0.func.8 = functions.DoWhile
-gp.fs.0.func.8.nc = nc6
-#gp.fs.0.func.12 = functions.Not
-#gp.fs.0.func.12.nc = nc1
-gp.fs.0.func.9 = functions.And
-gp.fs.0.func.9.nc = nc2
-#gp.fs.0.func.14 = functions.Or
-#gp.fs.0.func.14.nc = nc2
-#gp.fs.0.func.15 = functions.Equal
-#gp.fs.0.func.15.nc = nc2
+gp.fs.0.func.7 = functions.IfThenElse
+gp.fs.0.func.7.nc = nc7
+gp.fs.0.func.8 = functions.IfThen
+gp.fs.0.func.8.nc = nc3
+gp.fs.0.func.9 = functions.DoWhile
+gp.fs.0.func.9.nc = nc6
+gp.fs.0.func.10 = functions.Not
+gp.fs.0.func.10.nc = nc1
+gp.fs.0.func.11 = functions.And
+gp.fs.0.func.11.nc = nc2
+gp.fs.0.func.12 = functions.Or
+gp.fs.0.func.12.nc = nc2
+gp.fs.0.func.13 = functions.Equal
+gp.fs.0.func.13.nc = nc2
 
 
 eval.problem = model.TSProblem
 #	Reevaluate individuals even if their evaluated flag has been set
-eval.problem.reevaluate = true
+eval.problem.reevaluate = false
 eval.problem.data = model.TSPData

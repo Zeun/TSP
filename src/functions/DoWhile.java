@@ -41,7 +41,7 @@ public class DoWhile extends GPNode {
 		
 		children[0].eval(state, thread, tspdata, stack, individual, tsproblem );
 
-		n = tspdata.getInstance().getLCT().size();
+		n = tspdata.getInstance().getListaCiudadesDisponibles().size();
 		x = tspdata.getResult();
 		i = 0;
 		lastCost = -1;
@@ -50,11 +50,11 @@ public class DoWhile extends GPNode {
 		//Revisar
 		while(x && y && i < n) {
 			children[1].eval(state, thread, tspdata, stack, individual, tsproblem);
-			if(tspdata.getInstance().cost() == lastCost) {
+			if(tspdata.getInstance().costoCircuito() == lastCost) {
 					y = false;
 			}
 			else {
-				lastCost = tspdata.getInstance().cost();
+				lastCost = tspdata.getInstance().costoCircuito();
 				children[0].eval(state, thread, tspdata, stack, individual, tsproblem);
 				x = tspdata.getResult();
 				//System.out.println("Resultado del \"WHILE(izq)\":\t" + x );

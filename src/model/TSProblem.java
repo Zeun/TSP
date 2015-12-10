@@ -26,8 +26,12 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 	public static int elites;
 	public static final double IND_MAX_REL_ERR = 0.01;
 	public static final double IND_MAX_NODES = 15.0;
+	public static int JOBS;
+	public static int SUBPOPS;
 	
-	ArrayList<TSPData> data;
+	ArrayList<TSPData> data_island1;
+	ArrayList<TSPData> data_island2;
+	ArrayList<ArrayList<TSPData>> data;
 	
 	@Override
 	public TSProblem clone() {
@@ -43,19 +47,42 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 		if (!(input instanceof TSPData)){
 			state.output.fatal("Obteniendo instancias de prueba desde archivo");
 		}
-		
+		JOBS =  state.parameters.getInt(new ec.util.Parameter("jobs"), null);	
+		SUBPOPS =  state.parameters.getInt(new ec.util.Parameter("pop.subpops"), null);
 		elites=  state.parameters.getInt(new ec.util.Parameter("breed.elite.0"),null);	
 		semillas=  state.parameters.getString(new ec.util.Parameter("seed.0"),null);
-		data = new ArrayList<TSPData>();
+		data_island1 = new ArrayList<TSPData>();
+		data_island2 = new ArrayList<TSPData>();
+		data = new ArrayList<ArrayList<TSPData>>();
 		
 		try {
 			LOG_FILE = FileIO.newLog(state.output, "out/TSPLog.out");
 			(new File("out/results/evolution" + (JOB_NUMBER))).mkdirs();
 			RESULTS_FILE = FileIO.newLog(state.output, "out/results/evolution" + (JOB_NUMBER) + "/TSPResults.out");
-			DOT_FILE = FileIO.newLog(state.output, "out/results/evolution"  + (JOB_NUMBER) + "/job."+(JOB_NUMBER)+".BestIndividual.dot");
-			final File folder = new File("data/evaluacion");
+			state.output.print("Generacion" + ", ", RESULTS_FILE);
+			state.output.print("N° Gen" + ", ", RESULTS_FILE);
+			state.output.print("Isla" + ", ", RESULTS_FILE);
+			state.output.print("N° Islas" + ", ", RESULTS_FILE);
+			state.output.print("Tiempo(ms)" + ", ", RESULTS_FILE);
+			state.output.print("Individuo" + ", ", RESULTS_FILE);
+			state.output.print("Obtenido" + ", ", RESULTS_FILE);
+			state.output.print("Óptimo" + ", ", RESULTS_FILE);
+			// state.output.print("N° Elementos" + ", ", RESULTS_FILE);
+			state.output.print("Error relativo" + ", ", RESULTS_FILE);
+			state.output.print("Fitness Error Relativo" + ", ", RESULTS_FILE);
+			state.output.print("Hits" + ", ", RESULTS_FILE);
+			state.output.print("Profundidad árbol" + ", ", RESULTS_FILE);
+			state.output.println("Tamaño árbol" + ", ", RESULTS_FILE);
 			
-			FileIO.readInstances(data, folder);
+			// DOT_FILE = FileIO.newLog(state.output, "out/results/evolution"  + (JOB_NUMBER) + "/job."+(JOB_NUMBER)+".BestIndividual.dot");
+			DOT_FILE = FileIO.newLog(state.output, "out/results/evolution" + JOB_NUMBER + "/BestIndividual.dot");
+			final File folder_island1 = new File("data/evaluacion_island1");
+//			final File folder_island2 = new File("data/evaluacion_island2");
+			
+			FileIO.readInstances(data_island1, folder_island1);
+//			FileIO.readInstances(data_island2, folder_island2);
+			data.add(data_island1);
+//			data.add(data_island2);
 			
 			System.out.println("Lectura desde archivo terminada con Exito!");
 		} catch (Exception e) {
@@ -75,7 +102,7 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 		
 			if (!individual.evaluated) {
 			
-			ArrayList<TSPData> auxData = new ArrayList<TSPData>();
+			//ArrayList<TSPData> auxData = new ArrayList<TSPData>();
 			
 			GPIndividual gpind = (GPIndividual) individual;
 			
@@ -99,69 +126,108 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 //				}		
 //			}
 
-			for(int i = 0; i < data.size(); i++) {
-				auxData.add(data.get(i).clone());	//nuevo data (vaciar mochila)							
+			for (int i = 0; i < data_island1.size(); i++) {
+				Instance auxData = new Instance();
+				auxData = data.get(subpopulation%2).get(i).getInstance().clone();
+				// System.out.println(auxData);
+				// auxData.add(data.get(i).clone());	//nuevo data (vaciar mochila)	
+				TSPData aux = new TSPData();
+				aux.instance = auxData;
 				//state.output.println("\n## Evaluando en instancia: " + auxData.get(i).getInstance().getName() + " ##\n", LOG_FILE);
 				gpind.trees[0].printStyle = GPTree.PRINT_STYLE_DOT;	//escribir individuos en formato dot				
 				long timeInit, timeEnd;
 				timeInit = System.nanoTime();	//inicio cronometro
-				gpind.trees[0].child.eval(state, threadnum, auxData.get(i), stack, gpind, this);	//evaluar el individuo gpind para la instancia i
+				gpind.trees[0].child.eval(state, threadnum, aux, stack, gpind, this);	//evaluar el individuo gpind para la instancia i
 				timeEnd = System.nanoTime();	//fin cronometro
-				
 				//Diferencia entre el resultado obtenido y el óptimo
-				err = Math.abs( auxData.get(i).getInstance().cost() - auxData.get(i).getInstance().getBestResult());
+				err = Math.abs( auxData.costoCircuito() - auxData.getOptimo());
 				//Error relativo entre la diferencia entre el resultado obtenido y el óptimo
-				instanceRelErr = err/(auxData.get(i).getInstance().getBestResult());
+				instanceRelErr = err/(auxData.getOptimo());
 				//Diferencia entre la cantidad de nodos usadas y el total a usar
-				size = Math.abs( auxData.get(i).getInstance().getLCA().size()- auxData.get(i).getInstance().getCT());
-				sizeRel = size/(float)(auxData.get(i).getInstance().getCT());
+				size = Math.abs( auxData.getListaCiudadesAgregadas().size()- auxData.getTotalCiudades());
+				sizeRel = size/(double)(auxData.getTotalCiudades());
 				//Hits
 //				if(err == 0 && size == 0) {
 //					hits++;
 //				}
-				if(instanceRelErr < IND_MAX_REL_ERR){
+				if(instanceRelErr < IND_MAX_REL_ERR && sizeRel == 0.0){
 					hits++;
 				}
 				//System.out.println(auxData.get(i).getInstance().printResult());
 				
 				//*log result*/
-				state.output.print(state.generation+" ", RESULTS_FILE);
-				state.output.print(state.numGenerations+" ", RESULTS_FILE);
-				state.output.print((timeEnd - timeInit) +" ", RESULTS_FILE);
-				state.output.print(gpind.toString()+" ", RESULTS_FILE);
-				state.output.print(auxData.get(i).getInstance().cost() + " ", RESULTS_FILE);
-				state.output.print(auxData.get(i).getInstance().getBestResult() + " ", RESULTS_FILE);
-				state.output.print(instanceRelErr +" ", RESULTS_FILE);
-				state.output.print(gpind.trees[0].child.depth()+"", RESULTS_FILE);
-				state.output.print((BETA*nodesResult + ALFA*instanceRelErr+""), RESULTS_FILE);
-				state.output.print(gpind.size() + " ", RESULTS_FILE);
-				state.output.print(hits +" ", RESULTS_FILE);		
-				state.output.print(size +" ", RESULTS_FILE);		
-				state.output.println(nodesResult +" ", RESULTS_FILE);				
-
+				state.output.print(state.generation + ", ", RESULTS_FILE);
+				state.output.print(state.numGenerations + ", ", RESULTS_FILE);
+				state.output.print(subpopulation + ", ", RESULTS_FILE);
+				state.output.print(SUBPOPS + ", ", RESULTS_FILE);
+				state.output.print((timeEnd - timeInit) + ", ", RESULTS_FILE);
+				state.output.print(gpind.toString() + ", ", RESULTS_FILE);
+				state.output.print(auxData.costoCircuito() + ", ", RESULTS_FILE);
+				state.output.print(auxData.getOptimo() + ", ", RESULTS_FILE);
+				// state.output.print(auxData.numeroElementos() + ", ", RESULTS_FILE);
+				state.output.print(instanceRelErr + ", ", RESULTS_FILE);
+				state.output.print((BETA*nodesResult + ALFA*(ALFA*instanceRelErr + BETA*sizeRel) + ", "), RESULTS_FILE);
+				state.output.print(hits + ", ", RESULTS_FILE);
+				state.output.print(gpind.trees[0].child.depth() + ", ", RESULTS_FILE);
+				state.output.println(gpind.size() + " ", RESULTS_FILE);
 				
 				relErrAcum += instanceRelErr;
 				relErrAcum2 += sizeRel;
-				state.output.print("Time: [init= " + timeInit + "], [end= " + timeEnd + "], [dif= " + (timeEnd - timeInit) + "]", LOG_FILE);
+				//state.output.print("Time: [init= " + timeInit + "], [end= " + timeEnd + "], [dif= " + (timeEnd - timeInit) + "]", LOG_FILE);
 				//casa=auxData.get(i).getInstance().getLCA();
 				//System.out.println(hits+" "+ auxData.get(i).getInstance().cost()+"   "+auxData.get(i).getInstance().getBestResult()+"  "+auxData.get(i).getInstance().getLCA());
+				
 			}
 			
 			Runtime garbage = Runtime.getRuntime();
 			garbage.gc();
 			
 			state.output.println("---- Evaluacion terminada ----", LOG_FILE);
+			double profitResult;
+			double errResult = relErrAcum / (double)data.get(subpopulation%2).size();
+			double sizeResult = relErrAcum2 / (double)data.get(subpopulation%2).size();
+			double hitsResult = Math.abs(hits-data.get(subpopulation%2).size())/(double)data.get(subpopulation%2).size();
+			 // Funcion objetivo para cada isla
+			/*
+			// Las primeras 2 islas se evaluan con f1 y f2
+			if (subpopulation < 2){
+				// Si la isla es par, funcion obj con hit
+				if (subpopulation % 2 == 0){
+					// Funcion objetivo considerando el numero de hits
+					profitResult = hitsResult;
+					state.output.println("Fitness Hits ", LOG_FILE);
+				} else { // Si la isla es par, funcion obj con err relativo
+					// Funcion objetivo tradicional con el error relativo
+					profitResult = (errResult*ALFA + sizeResult*BETA);
+					state.output.println("Fitness error relativo ", LOG_FILE);
+				}
+			} else { // Las ultimas 2 islas se evaluan con f2 y f1 
+				// Si la isla es impar, funcion obj con hit
+				if (subpopulation % 2 != 0){
+					// Funcion objetivo considerando el numero de hits
+					profitResult = hitsResult;
+					state.output.println("Fitness Hits ", LOG_FILE);
+				} else { // Si la isla es par, funcion obj con err relativo
+					// Funcion objetivo tradicional con el error relativo
+					profitResult = (errResult*ALFA + sizeResult*BETA);
+					state.output.println("Fitness error relativo ", LOG_FILE);
+				}
+			}
+			*/
 			
-			double profitResult = relErrAcum / auxData.size();
-			double profitResult2 = relErrAcum2 / auxData.size();
-			state.output.println(" Error relativo de la cantidad de nodos = " + nodesResult, LOG_FILE);
-			state.output.println(" Error relativo del profit = " + profitResult, LOG_FILE);
-			state.output.println(" profitResult = " + profitResult, LOG_FILE);
+			// Funcion objetivo combinada para caso canonico
+			profitResult = ALFA*(errResult*ALFA + sizeResult*BETA) + BETA*hitsResult;
+			// profitResult = ALFA * errResult + BETA * hitsResult;
+			
+			state.output.println("Fitness = " + profitResult, LOG_FILE);
+			state.output.println("Error relativo de la cantidad de nodos = " + nodesResult, LOG_FILE);
+			state.output.println("===================================== \n", LOG_FILE);
 			KozaFitness f = ((KozaFitness) gpind.fitness);
-			
-			float fitness = (float)(ALFA*(ALFA*profitResult + BETA*profitResult2) + BETA*nodesResult);
+			// System.out.println("subpop" + subpopulation);
+			float fitness = (float)(ALFA*profitResult + BETA*nodesResult);
 			f.setStandardizedFitness(state, fitness);
 			f.hits = hits;
+			
 			gpind.evaluated = true;
 			//Guardar individuo acá revisar codigo Camilo
 		}
@@ -175,7 +241,8 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 			final int log) {
 		
 		endGenerationTime = System.nanoTime();	//fin cronometro evoluciÃ³n
-		state.output.message("Evolution duration: " + (endGenerationTime - startGenerationTime) / 1000000 + " ms");	//duraciÃ³n evoluciÃ³n en ms
+		String message_time = "Evolution duration: " + (endGenerationTime - startGenerationTime) / 1000000 + " ms";	
+		state.output.message(message_time);
 		PrintWriter dataOutput = null;
 		Charset charset = Charset.forName("UTF-8");
 		try {			
@@ -189,8 +256,14 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 		dataOutput.println(Subpopulation.NUM_INDIVIDUALS_PREAMBLE + Code.encode(1));
 		dataOutput.println(Subpopulation.INDIVIDUAL_INDEX_PREAMBLE + Code.encode(0));
 		
-		individual.evaluated = false;
+//		individual.evaluated = false;
 		((GPIndividual)individual).printIndividual(state, dataOutput);
+		
+		dataOutput.println("\nJob: " + JOB_NUMBER);
+		dataOutput.println("Isla: " + subpopulation);
+		dataOutput.println("Generacion: " + state.generation);
+		dataOutput.println(message_time);
+		
 		dataOutput.close();
 
 		GPIndividual gpind = (GPIndividual) individual;
@@ -200,8 +273,8 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 		gpind.printIndividualForHumans(state, DOT_FILE);
 		
 		try {
-			FileIO.repairDot(JOB_NUMBER);
-			FileIO.dot_a_png(TSProblem.JOB_NUMBER);
+			FileIO.repairDot(JOB_NUMBER, JOBS, subpopulation);
+			FileIO.dot_a_png(TSProblem.JOB_NUMBER, subpopulation);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

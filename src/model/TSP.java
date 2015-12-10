@@ -16,7 +16,7 @@ public class TSP {
 		return ins.agregarCercano();
 	}
 	public static boolean agregarCentral (Instance ins){
-		return ins.agregarCentral();
+		return ins.agregarMediana();
 	}
 	public static boolean agregarLejano (Instance ins){
 		return ins.agregarLejano();
