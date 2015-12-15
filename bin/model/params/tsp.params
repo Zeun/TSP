@@ -49,5 +49,5 @@ gp.fs.0.func.13.nc = nc2
 
 eval.problem = model.TSProblem
 #	Reevaluate individuals even if their evaluated flag has been set
-eval.problem.reevaluate = false
+eval.problem.reevaluate = true
 eval.problem.data = model.TSPData

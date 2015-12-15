@@ -19,7 +19,7 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 	public static int DOT_FILE;
 	public static int JOB_NUMBER;
 	public static double ALFA = 0.95;
-	public static double BETA = 1- ALFA;
+	public static double BETA = 0.05;
 	public static long startGenerationTime;
 	public static long endGenerationTime;
 	public static String semillas;
@@ -35,22 +35,21 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 	
 	@Override
 	public TSProblem clone() {
-		TSProblem mkpp = (TSProblem) super.clone();
-		return mkpp;
+		TSProblem tsp = (TSProblem) super.clone();
+		return tsp;
 	}
 	
 	@Override
 	public void setup(final EvolutionState state, final Parameter base) {	
-		JOB_NUMBER = ((Integer)(state.job[0])).intValue();
+		JOB_NUMBER = ((Integer) (state.job[0])).intValue();
 		super.setup(state, base);
-		
-		if (!(input instanceof TSPData)){
+		if (!(input instanceof TSPData)) {
 			state.output.fatal("Obteniendo instancias de prueba desde archivo");
 		}
-		JOBS =  state.parameters.getInt(new ec.util.Parameter("jobs"), null);	
-		SUBPOPS =  state.parameters.getInt(new ec.util.Parameter("pop.subpops"), null);
-		elites=  state.parameters.getInt(new ec.util.Parameter("breed.elite.0"),null);	
-		semillas=  state.parameters.getString(new ec.util.Parameter("seed.0"),null);
+		JOBS = state.parameters.getInt(new ec.util.Parameter("jobs"), null);
+		SUBPOPS = state.parameters.getInt(new ec.util.Parameter("pop.subpops"), null);
+		elites = state.parameters.getInt(new ec.util.Parameter("breed.elite.0"), null);
+		semillas = state.parameters.getString(new ec.util.Parameter("seed.0"), null);
 		data_island1 = new ArrayList<TSPData>();
 		data_island2 = new ArrayList<TSPData>();
 		data = new ArrayList<ArrayList<TSPData>>();
@@ -65,24 +64,32 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 			state.output.print("N° Islas" + ", ", RESULTS_FILE);
 			state.output.print("Tiempo(ms)" + ", ", RESULTS_FILE);
 			state.output.print("Individuo" + ", ", RESULTS_FILE);
-			state.output.print("Obtenido" + ", ", RESULTS_FILE);
-			state.output.print("Óptimo" + ", ", RESULTS_FILE);
+			state.output.print("Resultado obtenido" + ", ", RESULTS_FILE);
+			state.output.print("Resultado óptimo" + ", ", RESULTS_FILE);
 			// state.output.print("N° Elementos" + ", ", RESULTS_FILE);
 			state.output.print("Error relativo" + ", ", RESULTS_FILE);
-			state.output.print("Fitness Error Relativo" + ", ", RESULTS_FILE);
+			state.output.print("Error relativo num ciudades" + ", ", RESULTS_FILE);
 			state.output.print("Hits" + ", ", RESULTS_FILE);
+			state.output.print("Error relativo tamaño árbol" + ", ", RESULTS_FILE);
 			state.output.print("Profundidad árbol" + ", ", RESULTS_FILE);
-			state.output.println("Tamaño árbol" + ", ", RESULTS_FILE);
+			state.output.print("Tamaño árbol" + ", ", RESULTS_FILE);
+			state.output.println("Nombre Instancia" + " ", RESULTS_FILE);	
+			
+			
 			
 			// DOT_FILE = FileIO.newLog(state.output, "out/results/evolution"  + (JOB_NUMBER) + "/job."+(JOB_NUMBER)+".BestIndividual.dot");
 			DOT_FILE = FileIO.newLog(state.output, "out/results/evolution" + JOB_NUMBER + "/BestIndividual.dot");
 			final File folder_island1 = new File("data/evaluacion_island1");
-//			final File folder_island2 = new File("data/evaluacion_island2");
-			
+			// Si tengo más de una población, uso 2 grupos de instancias
+			if (SUBPOPS > 1){
+				final File folder_island2 = new File("data/evaluacion_island2");
+				FileIO.readInstances(data_island2, folder_island2);
+				data.add(data_island2);
+			}
 			FileIO.readInstances(data_island1, folder_island1);
-//			FileIO.readInstances(data_island2, folder_island2);
+			
 			data.add(data_island1);
-//			data.add(data_island2);
+			
 			
 			System.out.println("Lectura desde archivo terminada con Exito!");
 		} catch (Exception e) {
@@ -102,11 +109,9 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 		
 			if (!individual.evaluated) {
 			
-			//ArrayList<TSPData> auxData = new ArrayList<TSPData>();
-			
 			GPIndividual gpind = (GPIndividual) individual;
 			
-			state.output.println("\n\nGeneracion:" + state.generation + "\nTSProblem: evaluando el individuo [" + gpind.toString() + "]\n", LOG_FILE);
+			state.output.println("Generacion: " + state.generation + "\nSubpopulation: " + subpopulation + "\nTSProblem: evaluando el individuo [" + gpind.toString() + "]\n", LOG_FILE);
 			gpind.printIndividualForHumans(state, LOG_FILE);
 			
 			int hits = 0;
@@ -119,12 +124,6 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 				nodesResult = Math.abs(IND_MAX_NODES - gpind.size() ) / IND_MAX_NODES;
 			
 			state.output.println("\n---- Iniciando evaluacion ---\nNum de Nodos:" + gpind.size(), LOG_FILE);
-			
-//			for(int i = 0; i < data.size(); i++) {
-//				if(!data.get(i).instance.isNew()){
-//					System.out.println(data.get(i).getInstance().printResult());
-//				}		
-//			}
 
 			for (int i = 0; i < data_island1.size(); i++) {
 				Instance auxData = new Instance();
@@ -142,7 +141,7 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 				//Diferencia entre el resultado obtenido y el óptimo
 				err = Math.abs( auxData.costoCircuito() - auxData.getOptimo());
 				//Error relativo entre la diferencia entre el resultado obtenido y el óptimo
-				instanceRelErr = err/(auxData.getOptimo());
+				instanceRelErr = err / (auxData.getOptimo());
 				//Diferencia entre la cantidad de nodos usadas y el total a usar
 				size = Math.abs( auxData.getListaCiudadesAgregadas().size()- auxData.getTotalCiudades());
 				sizeRel = size/(double)(auxData.getTotalCiudades());
@@ -153,7 +152,7 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 				if(instanceRelErr < IND_MAX_REL_ERR && sizeRel == 0.0){
 					hits++;
 				}
-				//System.out.println(auxData.get(i).getInstance().printResult());
+				// System.out.println(auxData.printResult());
 				
 				//*log result*/
 				state.output.print(state.generation + ", ", RESULTS_FILE);
@@ -166,10 +165,13 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 				state.output.print(auxData.getOptimo() + ", ", RESULTS_FILE);
 				// state.output.print(auxData.numeroElementos() + ", ", RESULTS_FILE);
 				state.output.print(instanceRelErr + ", ", RESULTS_FILE);
-				state.output.print((BETA*nodesResult + ALFA*(ALFA*instanceRelErr + BETA*sizeRel) + ", "), RESULTS_FILE);
+				state.output.print(sizeRel + ", ", RESULTS_FILE);
 				state.output.print(hits + ", ", RESULTS_FILE);
+				state.output.print(nodesResult + ", ", RESULTS_FILE);
 				state.output.print(gpind.trees[0].child.depth() + ", ", RESULTS_FILE);
-				state.output.println(gpind.size() + " ", RESULTS_FILE);
+				state.output.print(gpind.size() + ", ", RESULTS_FILE);
+				state.output.println(auxData.getNombreInstancia() + " ", RESULTS_FILE);
+				
 				
 				relErrAcum += instanceRelErr;
 				relErrAcum2 += sizeRel;
@@ -184,43 +186,49 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 			
 			state.output.println("---- Evaluacion terminada ----", LOG_FILE);
 			double profitResult;
-			double errResult = relErrAcum / (double)data.get(subpopulation%2).size();
-			double sizeResult = relErrAcum2 / (double)data.get(subpopulation%2).size();
+			double errResult = relErrAcum / (double) data.get(subpopulation % 2).size();
+			double sizeResult = relErrAcum2 / (double) data.get(subpopulation % 2).size();
 			double hitsResult = Math.abs(hits-data.get(subpopulation%2).size())/(double)data.get(subpopulation%2).size();
-			 // Funcion objetivo para cada isla
-			/*
-			// Las primeras 2 islas se evaluan con f1 y f2
-			if (subpopulation < 2){
-				// Si la isla es par, funcion obj con hit
-				if (subpopulation % 2 == 0){
-					// Funcion objetivo considerando el numero de hits
-					profitResult = hitsResult;
-					state.output.println("Fitness Hits ", LOG_FILE);
-				} else { // Si la isla es par, funcion obj con err relativo
-					// Funcion objetivo tradicional con el error relativo
-					profitResult = (errResult*ALFA + sizeResult*BETA);
-					state.output.println("Fitness error relativo ", LOG_FILE);
+			// Si tengo más de una población, uso islas... cc uso f obj estándar
+			if (SUBPOPS > 1){
+				// Funcion objetivo para cada isla
+				// Las primeras 2 islas se evaluan con f1 y f2
+				if (subpopulation < 2){
+					// Si la isla es par, funcion obj con hit
+					if (subpopulation % 2 == 0){
+						// Funcion objetivo considerando el numero de hits
+						profitResult = hitsResult;
+						state.output.println("Fitness Hits ", LOG_FILE);
+					} else { // Si la isla es par, funcion obj con err relativo
+						// Funcion objetivo tradicional con el error relativo
+						profitResult = (errResult*ALFA + sizeResult*BETA);
+						state.output.println("Fitness error relativo ", LOG_FILE);
+					}
+				} else { // Las ultimas 2 islas se evaluan con f2 y f1 
+					// Si la isla es impar, funcion obj con hit
+					if (subpopulation % 2 != 0){
+						// Funcion objetivo considerando el numero de hits
+						profitResult = hitsResult;
+						state.output.println("Fitness Hits ", LOG_FILE);
+					} else { // Si la isla es par, funcion obj con err relativo
+						// Funcion objetivo tradicional con el error relativo
+						profitResult = (errResult*ALFA + sizeResult*BETA);
+						state.output.println("Fitness error relativo ", LOG_FILE);
+					}
 				}
-			} else { // Las ultimas 2 islas se evaluan con f2 y f1 
-				// Si la isla es impar, funcion obj con hit
-				if (subpopulation % 2 != 0){
-					// Funcion objetivo considerando el numero de hits
-					profitResult = hitsResult;
-					state.output.println("Fitness Hits ", LOG_FILE);
-				} else { // Si la isla es par, funcion obj con err relativo
-					// Funcion objetivo tradicional con el error relativo
-					profitResult = (errResult*ALFA + sizeResult*BETA);
-					state.output.println("Fitness error relativo ", LOG_FILE);
-				}
+			} else {
+				// Funcion objetivo combinada para caso canonico
+				profitResult = ALFA*(errResult*ALFA + sizeResult*BETA) + BETA*hitsResult;
 			}
-			*/
 			
-			// Funcion objetivo combinada para caso canonico
-			profitResult = ALFA*(errResult*ALFA + sizeResult*BETA) + BETA*hitsResult;
+			
+			
 			// profitResult = ALFA * errResult + BETA * hitsResult;
-			
-			state.output.println("Fitness = " + profitResult, LOG_FILE);
-			state.output.println("Error relativo de la cantidad de nodos = " + nodesResult, LOG_FILE);
+			// state.output.println("Fitness = ALFA*(ALFA*(ALFA*Error Relativo + BETA*Error Num Ciudades) + BETA*Num Hits) + BETA*Num Nodos", LOG_FILE); 
+			// state.output.println("Fitness = " + ALFA + "*(" + ALFA + "*(" + ALFA + "*" + errResult
+			//		+ " + " + BETA + "*" + sizeResult + ") + " + BETA + "*" + hitsResult + ") + " + BETA + "*" + nodesResult , LOG_FILE);
+			state.output.println("Fitness = " + (ALFA*profitResult + BETA*nodesResult), LOG_FILE);
+			// state.output.println("Error relativo de la cantidad de nodos = " + nodesResult, LOG_FILE);
 			state.output.println("===================================== \n", LOG_FILE);
 			KozaFitness f = ((KozaFitness) gpind.fitness);
 			// System.out.println("subpop" + subpopulation);
@@ -229,7 +237,6 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 			f.hits = hits;
 			
 			gpind.evaluated = true;
-			//Guardar individuo acá revisar codigo Camilo
 		}
 	}
 	
@@ -245,9 +252,11 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 		state.output.message(message_time);
 		PrintWriter dataOutput = null;
 		Charset charset = Charset.forName("UTF-8");
-		try {			
-			dataOutput = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream("out/results/job."+JOB_NUMBER+".BestIndividual.in"), charset)));
-			
+		try {
+			dataOutput = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(
+							"out/results/job." + JOB_NUMBER + ".subpop" + subpopulation + ".BestIndividual.in"),
+					charset)));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
