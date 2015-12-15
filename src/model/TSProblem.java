@@ -79,12 +79,15 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 			
 			// DOT_FILE = FileIO.newLog(state.output, "out/results/evolution"  + (JOB_NUMBER) + "/job."+(JOB_NUMBER)+".BestIndividual.dot");
 			DOT_FILE = FileIO.newLog(state.output, "out/results/evolution" + JOB_NUMBER + "/BestIndividual.dot");
-			final File folder_island1 = new File("data/evaluacion_island1");
+			final File folder_island1;
 			// Si tengo más de una población, uso 2 grupos de instancias
 			if (SUBPOPS > 1){
+				folder_island1 = new File("data/evaluacion_island1");
 				final File folder_island2 = new File("data/evaluacion_island2");
 				FileIO.readInstances(data_island2, folder_island2);
 				data.add(data_island2);
+			} else {
+				folder_island1 = new File("data/evaluacion_canonico");
 			}
 			FileIO.readInstances(data_island1, folder_island1);
 			
@@ -118,7 +121,6 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 			double relErrAcum = 0.0, relErrAcum2 = 0.0;
 			double nodesResult = 0.0;
 			double instanceRelErr, err, size, sizeRel;
-			//ArrayList<Integer> casa= new ArrayList<Integer>();
 			
 			if(gpind.size() > IND_MAX_NODES)
 				nodesResult = Math.abs(IND_MAX_NODES - gpind.size() ) / IND_MAX_NODES;

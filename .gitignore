@@ -63,3 +63,5 @@ out/
 
 .data/
 .out/
+*.params
+src/model/params/simple.params

@@ -226,8 +226,8 @@ public class Instance {
 		if (listaCiudadesAgregadas.size() == 1) {
 			return false;
 		}
-		double arco = matrizCostos.get(listaCiudadesAgregadas.get(0)).get(listaCiudadesAgregadas.get(1));
-		int posicion= -3;
+		double arco = matrizCostos.get(listaCiudadesAgregadas.get(1)).get(listaCiudadesAgregadas.get(2));
+		int posicion = 1;
 
 		for (int i = 1; i < listaCiudadesAgregadas.size() - 2; i++) {
 			if(arco > matrizCostos.get(listaCiudadesAgregadas.get(i)).get(listaCiudadesAgregadas.get(i+1))){
@@ -235,34 +235,24 @@ public class Instance {
 				arco = matrizCostos.get(listaCiudadesAgregadas.get(i)).get(listaCiudadesDisponibles.get(i+1));
 			}
 		}
-
-		if (arco == -2) {
-			return false;
-		}
-
-		else {
-			@SuppressWarnings("unchecked")
-			ArrayList<Integer> LTemp =(ArrayList<Integer>) listaCiudadesAgregadas.clone();
-			LTemp.remove(posicion);
-			LTemp.remove(posicion+1);
-
-			listaCiudadesDisponibles.add(0, listaCiudadesAgregadas.get(posicion));
-			listaCiudadesDisponibles.add(0, listaCiudadesAgregadas.get(posicion + 1));
-			listaCiudadesAgregadas.remove(posicion);
-			listaCiudadesAgregadas.remove(posicion + 1);
-			return true;
+//		ArrayList<Integer> LTemp = new ArrayList<Integer>(listaCiudadesAgregadas);
+//		LTemp.remove(posicion);
+//		LTemp.remove(posicion);
+		listaCiudadesDisponibles.add(listaCiudadesAgregadas.get(posicion));
+		listaCiudadesDisponibles.add(listaCiudadesAgregadas.get(posicion + 1));
+		listaCiudadesAgregadas.remove(posicion);
+		listaCiudadesAgregadas.remove(posicion);
+		return true;
 			
 			
-		}
 	}
 
 	public boolean eliminarUltimo(){
-		if (listaCiudadesAgregadas.size()==1 || listaCiudadesDisponibles.size()==1){
+		if (listaCiudadesAgregadas.size() == 1) {
 			return false;
-		}
-		else{
-			listaCiudadesDisponibles.add(0, listaCiudadesAgregadas.get(listaCiudadesAgregadas.size()-1));
-			listaCiudadesAgregadas.remove(listaCiudadesAgregadas.size()-1);
+		} else {
+			listaCiudadesDisponibles.add(listaCiudadesAgregadas.get(listaCiudadesAgregadas.size() - 1));
+			listaCiudadesAgregadas.remove(listaCiudadesAgregadas.size() - 1);
 			return true;
 		}
 	}
@@ -401,7 +391,7 @@ public class Instance {
 //			else {
 //				return false;
 //			}
-			return true;
+			return false;
 		}
 		else {
 			ArrayList<Integer> LTemp = new ArrayList<Integer>(listaCiudadesAgregadas);
