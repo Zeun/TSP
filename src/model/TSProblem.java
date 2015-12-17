@@ -19,12 +19,14 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 	public static int DOT_FILE;
 	public static int JOB_NUMBER;
 	public static double ALFA = 0.95;
-	public static double BETA = 0.05;
+	public static double BETA = 1 - ALFA;
+	public static double GAMMA = 0.75;
+	public static double DELTA = 1 - GAMMA;
 	public static long startGenerationTime;
 	public static long endGenerationTime;
 	public static String semillas;
 	public static int elites;
-	public static final double IND_MAX_REL_ERR = 0.01;
+	public static final double IND_MAX_REL_ERR = 0.05;
 	public static final double IND_MAX_NODES = 15.0;
 	public static int JOBS;
 	public static int SUBPOPS;
@@ -73,7 +75,7 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 			state.output.print("Error relativo tamaño árbol" + ", ", RESULTS_FILE);
 			state.output.print("Profundidad árbol" + ", ", RESULTS_FILE);
 			state.output.print("Tamaño árbol" + ", ", RESULTS_FILE);
-			state.output.println("Nombre Instancia" + " ", RESULTS_FILE);	
+			state.output.println("Nombre Instancia" + " ", RESULTS_FILE);
 			
 			
 			
@@ -220,7 +222,7 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 				}
 			} else {
 				// Funcion objetivo combinada para caso canonico
-				profitResult = ALFA*(errResult*ALFA + sizeResult*BETA) + BETA*hitsResult;
+				profitResult = ALFA*(errResult*GAMMA + sizeResult*DELTA) + BETA*hitsResult;
 			}
 			
 			
