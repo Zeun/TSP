@@ -3,6 +3,8 @@ package model;
 import java.io.*;
 import java.util.*;
 
+import javax.management.PersistentMBean;
+
 import ec.util.Output;
 
 public class FileIO {
@@ -51,17 +53,23 @@ public class FileIO {
 		// Lista de ciudades lejanas al centro
 		ArrayList<Integer> ciudadesLejanas = new ArrayList<>();
 		ArrayList<Double> listTemp;
+		// Peor arco
+		double temp, peorArco = -1;
 
 		for (int i = 0; i < totalCiudades; i++) {
 			listTemp = new ArrayList<>();
 			for (int j = 0; j < totalCiudades; j++) {
-				listTemp.add(s.nextDouble());
+				temp = s.nextDouble();
+				listTemp.add(temp);
+				if(peorArco < temp){
+					peorArco = temp;
+				}
 			}
 			matrizCostos.add(listTemp);
 			listaCiudadesDisponibles.add(i + 1);
 		}
 		s.close();
-		
+		// System.out.println(peorArco);
 		listaCiudadesDisponibles.remove(listaCiudadesDisponibles.size() - 1);
 		listaCiudadesAgregadas.add(0);	
 		// System.out.println(listaCiudadesDisponibles);
@@ -100,7 +108,7 @@ public class FileIO {
 //		System.out.println("cl " + ciudadesLejanas);
 
 		return new Instance(nombreInstancia, mejorResultado, totalCiudades, listaCiudadesAgregadas, listaCiudadesDisponibles,
-				matrizCostos, ciudadesCercanas, ciudadesMedias, ciudadesLejanas);
+				matrizCostos, ciudadesCercanas, ciudadesMedias, ciudadesLejanas, peorArco);
 	}
 
 	public static void repairDot(int JOB_NUMBER, int JOBS, int subpopulation) throws IOException {

@@ -3,6 +3,9 @@ package model;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+
+import javax.security.sasl.AuthorizeCallback;
+
 import ec.*;
 import ec.gp.*;
 import ec.gp.koza.KozaFitness;
@@ -20,7 +23,7 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 	public static int JOB_NUMBER;
 	public static double ALFA = 0.95;
 	public static double BETA = 1 - ALFA;
-	public static double GAMMA = 0.75;
+	public static double GAMMA = 0.55;
 	public static double DELTA = 1 - GAMMA;
 	public static long startGenerationTime;
 	public static long endGenerationTime;
@@ -111,7 +114,7 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 	        final Individual individual,
 	        final int subpopulation,
 	        final int threadnum) {
-		
+			
 			if (!individual.evaluated) {
 			
 			GPIndividual gpind = (GPIndividual) individual;
@@ -120,7 +123,7 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 			gpind.printIndividualForHumans(state, LOG_FILE);
 			
 			int hits = 0;
-			double relErrAcum = 0.0, relErrAcum2 = 0.0;
+			double relErrAcum = 0.0, relErrAcum2 = 0.0, promedioPeorArco = 0.0;
 			double nodesResult = 0.0;
 			double instanceRelErr, err, size, sizeRel;
 			
@@ -130,6 +133,7 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 			state.output.println("\n---- Iniciando evaluacion ---\nNum de Nodos:" + gpind.size(), LOG_FILE);
 
 			for (int i = 0; i < data_island1.size(); i++) {
+
 				Instance auxData = new Instance();
 				auxData = data.get(subpopulation%2).get(i).getInstance().clone();
 				// System.out.println(auxData);
@@ -179,6 +183,7 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 				
 				relErrAcum += instanceRelErr;
 				relErrAcum2 += sizeRel;
+				promedioPeorArco += auxData.getPeorArco();
 				//state.output.print("Time: [init= " + timeInit + "], [end= " + timeEnd + "], [dif= " + (timeEnd - timeInit) + "]", LOG_FILE);
 				//casa=auxData.get(i).getInstance().getLCA();
 				//System.out.println(hits+" "+ auxData.get(i).getInstance().cost()+"   "+auxData.get(i).getInstance().getBestResult()+"  "+auxData.get(i).getInstance().getLCA());
@@ -189,7 +194,9 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 			garbage.gc();
 			
 			state.output.println("---- Evaluacion terminada ----", LOG_FILE);
+			
 			double profitResult;
+			promedioPeorArco /= data.get(subpopulation % 2).size();
 			double errResult = relErrAcum / (double) data.get(subpopulation % 2).size();
 			double sizeResult = relErrAcum2 / (double) data.get(subpopulation % 2).size();
 			double hitsResult = Math.abs(hits-data.get(subpopulation%2).size())/(double)data.get(subpopulation%2).size();
@@ -221,8 +228,10 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 					}
 				}
 			} else {
+				// System.out.println(sizeResult);
 				// Funcion objetivo combinada para caso canonico
-				profitResult = ALFA*(errResult*GAMMA + sizeResult*DELTA) + BETA*hitsResult;
+				// profitResult = ALFA * (errResult * GAMMA + sizeResult * DELTA) + BETA * hitsResult;
+				profitResult = ALFA * errResult + BETA * hitsResult;
 			}
 			
 			
@@ -231,12 +240,12 @@ public class TSProblem extends GPProblem implements SimpleProblemForm {
 			// state.output.println("Fitness = ALFA*(ALFA*(ALFA*Error Relativo + BETA*Error Num Ciudades) + BETA*Num Hits) + BETA*Num Nodos", LOG_FILE); 
 			// state.output.println("Fitness = " + ALFA + "*(" + ALFA + "*(" + ALFA + "*" + errResult
 			//		+ " + " + BETA + "*" + sizeResult + ") + " + BETA + "*" + hitsResult + ") + " + BETA + "*" + nodesResult , LOG_FILE);
-			state.output.println("Fitness = " + (ALFA*profitResult + BETA*nodesResult), LOG_FILE);
+			state.output.println("Fitness = " + (ALFA*profitResult + BETA*nodesResult + promedioPeorArco *sizeResult), LOG_FILE);
 			// state.output.println("Error relativo de la cantidad de nodos = " + nodesResult, LOG_FILE);
 			state.output.println("===================================== \n", LOG_FILE);
 			KozaFitness f = ((KozaFitness) gpind.fitness);
 			// System.out.println("subpop" + subpopulation);
-			float fitness = (float)(ALFA*profitResult + BETA*nodesResult);
+			float fitness = (float)(ALFA*profitResult + BETA*nodesResult + promedioPeorArco*sizeResult);
 			f.setStandardizedFitness(state, fitness);
 			f.hits = hits;
 			

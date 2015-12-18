@@ -8,6 +8,7 @@ public class Instance {
 	private String nombreInstancia;
 	private int mejorResultado;
 	private int totalCiudades;
+	private double peorArco;
 	private ArrayList<ArrayList<Double>> matrizCostos = new ArrayList<>();//Matriz de costos
 	private ArrayList<Integer> listaCiudadesDisponibles = new ArrayList<>(); //Lista de Ciudades totales
 	private ArrayList<Integer> listaCiudadesAgregadas = new ArrayList<>(); //Lista de Ciudades Agregadas
@@ -27,7 +28,8 @@ public class Instance {
 						ArrayList<ArrayList<Double>> matrizCostos2,
 						ArrayList<Integer> ciudadesCercanas, 
 						ArrayList<Integer> ciudadesMedias,
-						ArrayList<Integer> ciudadesLejanas
+						ArrayList<Integer> ciudadesLejanas,
+						double peorArco
 					) 
 	{
 		this.nombreInstancia = nombreInstancia;
@@ -39,6 +41,7 @@ public class Instance {
 		this.ciudadesCercanas = ciudadesCercanas;
 		this.ciudadesMedias = ciudadesMedias;
 		this.ciudadesLejanas = ciudadesLejanas;
+		this.peorArco = peorArco;
 
 	}
 
@@ -59,6 +62,7 @@ public class Instance {
 		clone.ciudadesCercanas = new ArrayList<>(this.ciudadesCercanas);
 		clone.ciudadesMedias = new ArrayList<>(this.ciudadesMedias);
 		clone.ciudadesLejanas = new ArrayList<>(this.ciudadesLejanas);
+		clone.peorArco = peorArco;
 //		for (Integer temp : this.LCT) {clone.LCT.add(temp);}
 //		for (Integer temp : this.LCA) {clone.LCA.add(temp);}
 //		for (Integer temp : this.ciudadesCercanas) {clone.ciudadesCercanas.add(temp);}
@@ -464,6 +468,10 @@ public class Instance {
 	 */
 	public String getNombreInstancia(){
 		return nombreInstancia;
+	}
+	
+	public double getPeorArco(){
+		return peorArco;
 	}
 
 }
