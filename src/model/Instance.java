@@ -8,7 +8,7 @@ public class Instance {
 	private String nombreInstancia;
 	private int mejorResultado;
 	private int totalCiudades;
-	private double peorArco;
+	private double worstEdge;
 	private ArrayList<ArrayList<Double>> matrizCostos = new ArrayList<>();//Matriz de costos
 	private ArrayList<Integer> listaCiudadesDisponibles = new ArrayList<>(); //Lista de Ciudades totales
 	private ArrayList<Integer> listaCiudadesAgregadas = new ArrayList<>(); //Lista de Ciudades Agregadas
@@ -29,7 +29,7 @@ public class Instance {
 						ArrayList<Integer> ciudadesCercanas, 
 						ArrayList<Integer> ciudadesMedias,
 						ArrayList<Integer> ciudadesLejanas,
-						double peorArco
+						double worstEdge
 					) 
 	{
 		this.nombreInstancia = nombreInstancia;
@@ -41,7 +41,7 @@ public class Instance {
 		this.ciudadesCercanas = ciudadesCercanas;
 		this.ciudadesMedias = ciudadesMedias;
 		this.ciudadesLejanas = ciudadesLejanas;
-		this.peorArco = peorArco;
+		this.worstEdge = worstEdge;
 
 	}
 
@@ -62,7 +62,7 @@ public class Instance {
 		clone.ciudadesCercanas = new ArrayList<>(this.ciudadesCercanas);
 		clone.ciudadesMedias = new ArrayList<>(this.ciudadesMedias);
 		clone.ciudadesLejanas = new ArrayList<>(this.ciudadesLejanas);
-		clone.peorArco = peorArco;
+		clone.worstEdge = worstEdge;
 //		for (Integer temp : this.LCT) {clone.LCT.add(temp);}
 //		for (Integer temp : this.LCA) {clone.LCA.add(temp);}
 //		for (Integer temp : this.ciudadesCercanas) {clone.ciudadesCercanas.add(temp);}
@@ -89,11 +89,10 @@ public class Instance {
 	 * Agrega el vecino que agregue el menor costo al circuito
 	 * @return verdadero si puede agregar una ciudad; falso cc.
 	 */
-	public boolean agregarMejorVecino(){
+	public boolean agregarMejorVecino() {
 		if (listaCiudadesDisponibles.size() == 0) {
 			return false;
-		}
-		else {
+		} else {
 			if (listaCiudadesDisponibles.size() == 1) {
 				listaCiudadesAgregadas.add(listaCiudadesDisponibles.get(0));
 				listaCiudadesDisponibles.remove(0);
@@ -101,7 +100,8 @@ public class Instance {
 			}
 
 			int posicion = 0;
-			double costo = matrizCostos.get(listaCiudadesAgregadas.get(listaCiudadesAgregadas.size()-1)).get(listaCiudadesDisponibles.get(1));
+			double costo = matrizCostos.get(listaCiudadesAgregadas.get(listaCiudadesAgregadas.size() - 1))
+					.get(listaCiudadesDisponibles.get(1));
 
 			for (int j = 0; j < listaCiudadesDisponibles.size(); j++) {
 				if (costo > matrizCostos.get(listaCiudadesAgregadas.get(listaCiudadesAgregadas.size() - 1))
@@ -111,11 +111,11 @@ public class Instance {
 							.get(listaCiudadesDisponibles.get(j));
 				}
 			}
-			//Agrego la ciudad
+			// Agrego la ciudad
 			listaCiudadesAgregadas.add(listaCiudadesDisponibles.get(posicion));
 			listaCiudadesDisponibles.remove(posicion);
 			return true;
-			
+
 		}
 	}
 
@@ -123,11 +123,10 @@ public class Instance {
 	 * Agrega el vecino que agregue el mayor costo al circuito
 	 * @return verdadero si puede agregar una ciudad; falso cc.
 	 */
-	public boolean agregarPeorVecino(){
+	public boolean agregarPeorVecino() {
 		if (listaCiudadesDisponibles.size() == 0) {
 			return false;
-		}
-		else {
+		} else {
 			if (listaCiudadesDisponibles.size() == 1) {
 				listaCiudadesAgregadas.add(listaCiudadesDisponibles.get(0));
 				listaCiudadesDisponibles.remove(0);
@@ -146,10 +145,10 @@ public class Instance {
 							.get(listaCiudadesDisponibles.get(j));
 				}
 			}
-			// Agrego ciudad 
+			// Agrego ciudad
 			listaCiudadesAgregadas.add(listaCiudadesDisponibles.get(posicion));
 			listaCiudadesDisponibles.remove(posicion);
-			return true;	
+			return true;
 		}
 	}
 	
@@ -157,17 +156,16 @@ public class Instance {
 	 * Agrego el vecino más cercano
 	 * @return verdadero si puede agregar una ciudad; falso cc.
 	 */
-	public boolean agregarCercano(){
+	public boolean agregarCercano() {
 		if (listaCiudadesDisponibles.size() == 0) {
 			return false;
-		}
-		else {
+		} else {
 			if (listaCiudadesDisponibles.size() == 1) {
 				listaCiudadesAgregadas.add(listaCiudadesDisponibles.get(0));
 				listaCiudadesDisponibles.remove(0);
 				return true;
 			}
-			
+
 			for (int i = 0; i < ciudadesCercanas.size(); i++) {
 				if (listaCiudadesDisponibles.contains(ciudadesCercanas.get(i))) {
 					listaCiudadesAgregadas.add(ciudadesCercanas.get(i));
@@ -183,11 +181,10 @@ public class Instance {
 	 * Agrego el vecino a distancia media
 	 * @return verdadero si puede agregar una ciudad; falso cc.
 	 */
-	public boolean agregarMediana(){
+	public boolean agregarMediana() {
 		if (listaCiudadesDisponibles.size() == 0) {
 			return false;
-		}
-		else {
+		} else {
 			if (listaCiudadesDisponibles.size() == 1) {
 				listaCiudadesAgregadas.add(listaCiudadesDisponibles.get(0));
 				listaCiudadesDisponibles.remove(0);
@@ -209,11 +206,10 @@ public class Instance {
 	 * Agrego el vecino más lejano
 	 * @return verdadero si puede agregar una ciudad; falso cc.
 	 */
-	public boolean agregarLejano(){
+	public boolean agregarLejano() {
 		if (listaCiudadesDisponibles.size() == 0) {
 			return false;
-		}
-		else {
+		} else {
 			if (listaCiudadesDisponibles.size() == 1) {
 				listaCiudadesAgregadas.add(listaCiudadesDisponibles.get(0));
 				listaCiudadesDisponibles.remove(0);
@@ -275,19 +271,26 @@ public class Instance {
 			return false;
 		}
 		//if(listaCiudadesDisponibles.size()==0){
-		double best_current_distance = costo(listaCiudadesAgregadas);
+		double new_distance = costo(listaCiudadesAgregadas);
+		double best_current_distance = new_distance;
+		int numMejoras = 0;
 		for (int i = 1; i < listaCiudadesAgregadas.size() - 1; i++) {
 			for (int k = i + 1; k < listaCiudadesAgregadas.size() - 1; k++) {
 				ArrayList<Integer> new_route = optSwap(listaCiudadesAgregadas, i, k);
-				if (costo(new_route) <= best_current_distance) {
+				new_distance = costo(new_route);
+				if (new_distance < best_current_distance) {
 					listaCiudadesAgregadas = new ArrayList<Integer>(new_route);
+					best_current_distance = new_distance;
+					numMejoras++;
 				}
 			}
 		}
-		if (costo(listaCiudadesAgregadas) == best_current_distance) {
-			return false;
-		} else {
+		Runtime garbage = Runtime.getRuntime();
+		garbage.gc();
+		if (new_distance == best_current_distance && numMejoras > 0) {
 			return true;
+		} else {
+			return false;
 		}
 				
 		
@@ -295,19 +298,27 @@ public class Instance {
 
 	public ArrayList<Integer> optSwap(ArrayList<Integer> route, int i, int k) {
 		ArrayList<Integer> new_route = new ArrayList<Integer>();
-		ArrayList<Integer> l1 = new ArrayList<Integer>();
+		// ArrayList<Integer> l1 = new ArrayList<Integer>();
 		if (i==1) {
-			l1.add(route.get(0));
+			// l1.add(route.get(0));
+			new_route.add(route.get(0));
 		}
 		else {
-			l1 = new ArrayList<Integer>(route.subList(0, i));
+			// l1 = new ArrayList<Integer>(route.subList(0, i));
+			new_route.addAll(route.subList(0, i));
 		}
 		ArrayList<Integer> l2 = new ArrayList<Integer>(route.subList(i, k+1));
 		Collections.reverse(l2);
-		ArrayList<Integer> l3 = new ArrayList<Integer>(route.subList(k+1, route.size()));
-		new_route.addAll(l1);
+		new_route.addAll(l2);
+		new_route.addAll(route.subList(k+1, route.size()));
+		//ArrayList<Integer> l3 = new ArrayList<Integer>(route.subList(k+1, route.size()));
+		/*new_route.addAll(l1);
 		new_route.addAll(l2);
 		new_route.addAll(l3);
+		l1.clear();
+		l2.clear();
+		l3.clear();*/
+		
 		return new_route;
 	}
 
@@ -355,7 +366,7 @@ public class Instance {
 	 */
 	public boolean inverse() {
 		// Si es menor o igual a 3 no pasa nada y se retorna true
-		if (listaCiudadesAgregadas.size() <= 3) {
+		if (listaCiudadesAgregadas.size() <= 2) {
 //			ArrayList<Integer> LTemp = new ArrayList<Integer> (listaCiudadesAgregadas);
 //			LTemp.remove(0);
 //			Collections.reverse(LTemp);
@@ -375,11 +386,11 @@ public class Instance {
 			// System.out.println(LTemp);
 			if (listaCiudadesDisponibles.size() == 0)
 			LTemp.remove(0);
-			LTemp.remove(LTemp.size() - 1);
+			// LTemp.remove(LTemp.size() - 1);
 
 			Collections.reverse(LTemp);
 			LTemp.add(0, listaCiudadesAgregadas.get(0));
-			LTemp.add(listaCiudadesAgregadas.get(listaCiudadesAgregadas.size() - 1));
+			// LTemp.add(listaCiudadesAgregadas.get(listaCiudadesAgregadas.size() - 1));
 			
 			if (costo(LTemp) < costo(listaCiudadesAgregadas)) {
 				listaCiudadesAgregadas = new ArrayList<Integer>(LTemp);
@@ -470,8 +481,12 @@ public class Instance {
 		return nombreInstancia;
 	}
 	
-	public double getPeorArco(){
-		return peorArco;
+	/**
+	 * 
+	 * @return peor arco de la instancia
+	 */
+	public double getWorstEdge(){
+		return worstEdge;
 	}
 
 }
