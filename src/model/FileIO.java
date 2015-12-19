@@ -47,9 +47,9 @@ public class FileIO {
 		// Lista de ciudades agregadas al circuito
 		ArrayList<Integer> listaCiudadesAgregadas = new ArrayList<>();
 		// Lista de ciudades cercanas al centro
-		ArrayList<Integer> ciudadesCercanas = new ArrayList<>();
+		ArrayList<Integer> ciudadesCercanasCentro = new ArrayList<>();
 		// Lista de ciudades lejanas al centro
-		ArrayList<Integer> ciudadesLejanas = new ArrayList<>();
+		ArrayList<Integer> ciudadesLejanasCentro = new ArrayList<>();
 		ArrayList<Double> listTemp;
 		// Peor arco
 		double temp, peorArco = -1;
@@ -92,10 +92,10 @@ public class FileIO {
 		for (int i = 0; i<listaDistancias.size();i++){
 			if (i < elementos){
 				// System.out.println("cc " + listaDistancias.get(i));
-				ciudadesCercanas.add(listaTemporal.indexOf(listaDistancias.get(i)) + 1);
+				ciudadesCercanasCentro.add(listaTemporal.indexOf(listaDistancias.get(i)) + 1);
 			} else {
 				// System.out.println("cl " + listaDistancias.get(i));
-				ciudadesLejanas.add(listaTemporal.indexOf(listaDistancias.get(i)) + 1);
+				ciudadesLejanasCentro.add(listaTemporal.indexOf(listaDistancias.get(i)) + 1);
 			}
 		}
 //		System.out.println("cc " + ciudadesCercanas);
@@ -103,7 +103,7 @@ public class FileIO {
 //		System.out.println("cl " + ciudadesLejanas);
 
 		return new Instance(nombreInstancia, mejorResultado, totalCiudades, listaCiudadesAgregadas, listaCiudadesDisponibles,
-				matrizCostos, ciudadesCercanas, ciudadesLejanas, peorArco);
+				matrizCostos, ciudadesCercanasCentro, ciudadesLejanasCentro, peorArco);
 	}
 
 	public static void repairDot(int JOB_NUMBER, int JOBS, int subpopulation) throws IOException {

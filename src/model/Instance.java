@@ -12,8 +12,8 @@ public class Instance {
 	private ArrayList<ArrayList<Double>> matrizCostos = new ArrayList<>();//Matriz de costos
 	private ArrayList<Integer> listaCiudadesDisponibles = new ArrayList<>(); //Lista de Ciudades totales
 	private ArrayList<Integer> listaCiudadesAgregadas = new ArrayList<>(); //Lista de Ciudades Agregadas
-	private ArrayList<Integer> ciudadesCercanas = new ArrayList<>(); //Lista de Ciudades Agregadas
-	private ArrayList<Integer> ciudadesLejanas = new ArrayList<>(); //Lista de Ciudades Agregadas
+	private ArrayList<Integer> ciudadesCercanasCentro = new ArrayList<>(); //Lista de Ciudades Agregadas
+	private ArrayList<Integer> ciudadesLejanasCentro = new ArrayList<>(); //Lista de Ciudades Agregadas
 	public Instance(){
 
 	}
@@ -25,8 +25,8 @@ public class Instance {
 						ArrayList<Integer> listaCiudadesAgregadas,
 						ArrayList<Integer> listaCiudadesDisponibles, 
 						ArrayList<ArrayList<Double>> matrizCostos2,
-						ArrayList<Integer> ciudadesCercanas, 
-						ArrayList<Integer> ciudadesLejanas,
+						ArrayList<Integer> ciudadesCercanasCentro, 
+						ArrayList<Integer> ciudadesLejanasCentro,
 						double worstEdge
 					) 
 	{
@@ -36,8 +36,8 @@ public class Instance {
 		this.matrizCostos = matrizCostos2;
 		this.listaCiudadesDisponibles = listaCiudadesDisponibles;
 		this.listaCiudadesAgregadas = listaCiudadesAgregadas;
-		this.ciudadesCercanas = ciudadesCercanas;
-		this.ciudadesLejanas = ciudadesLejanas;
+		this.ciudadesCercanasCentro = ciudadesCercanasCentro;
+		this.ciudadesLejanasCentro = ciudadesLejanasCentro;
 		this.worstEdge = worstEdge;
 
 	}
@@ -49,21 +49,11 @@ public class Instance {
 		clone.mejorResultado = this.mejorResultado;
 		clone.totalCiudades = this.totalCiudades;
 		clone.matrizCostos = this.matrizCostos;
-		// ArrayList<Integer> listaTemporal = new ArrayList<>(listaCiudadesDisponibles); 
 		clone.listaCiudadesDisponibles = new ArrayList<>(this.listaCiudadesDisponibles);
-//		System.out.println("CD Antes " + this.listaCiudadesDisponibles);
-//		System.out.println("CD Dsps " + clone.listaCiudadesDisponibles);
 		clone.listaCiudadesAgregadas = new ArrayList<>(this.listaCiudadesAgregadas);
-//		System.out.println("CA Antes " + this.listaCiudadesAgregadas);
-//		System.out.println("CA Dsps " + clone.listaCiudadesAgregadas);
-		clone.ciudadesCercanas = new ArrayList<>(this.ciudadesCercanas);
-		clone.ciudadesLejanas = new ArrayList<>(this.ciudadesLejanas);
+		clone.ciudadesCercanasCentro = new ArrayList<>(this.ciudadesCercanasCentro);
+		clone.ciudadesLejanasCentro = new ArrayList<>(this.ciudadesLejanasCentro);
 		clone.worstEdge = worstEdge;
-//		for (Integer temp : this.LCT) {clone.LCT.add(temp);}
-//		for (Integer temp : this.LCA) {clone.LCA.add(temp);}
-//		for (Integer temp : this.ciudadesCercanas) {clone.ciudadesCercanas.add(temp);}
-//		for (Integer temp : this.ciudadesMedias) {clone.ciudadesMedias.add(temp);}
-//		for (Integer temp : this.ciudadesLejanas) {clone.ciudadesLejanas.add(temp);}
 		return clone;
 	}
 
@@ -162,10 +152,10 @@ public class Instance {
 				return true;
 			}
 
-			for (int i = 0; i < ciudadesCercanas.size(); i++) {
-				if (listaCiudadesDisponibles.contains(ciudadesCercanas.get(i))) {
-					listaCiudadesAgregadas.add(ciudadesCercanas.get(i));
-					listaCiudadesDisponibles.remove(listaCiudadesDisponibles.indexOf(ciudadesCercanas.get(i)));
+			for (int i = 0; i < ciudadesCercanasCentro.size(); i++) {
+				if (listaCiudadesDisponibles.contains(ciudadesCercanasCentro.get(i))) {
+					listaCiudadesAgregadas.add(ciudadesCercanasCentro.get(i));
+					listaCiudadesDisponibles.remove(listaCiudadesDisponibles.indexOf(ciudadesCercanasCentro.get(i)));
 					return true;
 				}
 			}
@@ -187,10 +177,10 @@ public class Instance {
 				return true;
 			}
 
-			for (int i = 0; i < ciudadesLejanas.size(); i++) {
-				if (listaCiudadesDisponibles.contains(ciudadesLejanas.get(i))) {
-					listaCiudadesAgregadas.add(ciudadesLejanas.get(i));
-					listaCiudadesDisponibles.remove(listaCiudadesDisponibles.indexOf(ciudadesLejanas.get(i)));
+			for (int i = 0; i < ciudadesLejanasCentro.size(); i++) {
+				if (listaCiudadesDisponibles.contains(ciudadesLejanasCentro.get(i))) {
+					listaCiudadesAgregadas.add(ciudadesLejanasCentro.get(i));
+					listaCiudadesDisponibles.remove(listaCiudadesDisponibles.indexOf(ciudadesLejanasCentro.get(i)));
 					return true;
 				}
 			}
@@ -270,32 +260,11 @@ public class Instance {
 			return true;
 		}
 	}	
-	
-	public boolean eliminarPeor(){
-		if (listaCiudadesAgregadas.size() == 1) {
-			return false;
-		}
-		double arco = matrizCostos.get(listaCiudadesAgregadas.get(1)).get(listaCiudadesAgregadas.get(2));
-		int posicion = 1;
 
-		for (int i = 1; i < listaCiudadesAgregadas.size() - 2; i++) {
-			if(arco > matrizCostos.get(listaCiudadesAgregadas.get(i)).get(listaCiudadesAgregadas.get(i+1))){
-				posicion = i;
-				arco = matrizCostos.get(listaCiudadesAgregadas.get(i)).get(listaCiudadesDisponibles.get(i+1));
-			}
-		}
-//		ArrayList<Integer> LTemp = new ArrayList<Integer>(listaCiudadesAgregadas);
-//		LTemp.remove(posicion);
-//		LTemp.remove(posicion);
-		listaCiudadesDisponibles.add(listaCiudadesAgregadas.get(posicion));
-		listaCiudadesDisponibles.add(listaCiudadesAgregadas.get(posicion + 1));
-		listaCiudadesAgregadas.remove(posicion);
-		listaCiudadesAgregadas.remove(posicion);
-		return true;
-			
-			
-	}
-
+	/**
+	 * Elimina el último nodo de la lista de nodos agregados
+	 * @return verdadero si puede eliminar, falso cc
+	 */
 	public boolean eliminarUltimo(){
 		if (listaCiudadesAgregadas.size() == 1) {
 			return false;
@@ -353,9 +322,6 @@ public class Instance {
 //		} else {
 //			return false;
 //		}
-	
-				
-		
 	}
 
 	public ArrayList<Integer> optSwap(ArrayList<Integer> route, int i, int k) {
@@ -426,7 +392,7 @@ public class Instance {
 	}
 
 	/**
-	 * Elimina los nodos que componen el peor arco
+	 * Elimina los nodos i, j que componen el peor arco
 	 * @return
 	 */
 	public boolean eliminarPeorArco() {
@@ -521,6 +487,10 @@ public class Instance {
 		return true;
 	}
 	
+	/**
+	 * Calcula el costo del circuito de la lista final de ciudades
+	 * @return costo del circuito
+	 */
 	public double costoCircuito() {
 		double total = 0.0;
 		if (listaCiudadesAgregadas.size() >= 2) {
@@ -535,6 +505,10 @@ public class Instance {
 		return total;
 	}
 
+	/**
+	 * Calcula el costo del circuito de una lista específica
+	 * @return costo del circuito
+	 */
 	public double costo(ArrayList<Integer> lista){
 		double total = 0.0;
 		if (lista.size() >= 2) {
@@ -549,6 +523,10 @@ public class Instance {
 		return total;
 	}
 
+	/**
+	 * Imprime en pantalla el circuito actual, número de ciudades y resultado obtenido vs el óptimo
+	 * @return log del resultado
+	 */
 	public String printResult(){
 		String response = "lista ciudades agregadas = " + this.listaCiudadesAgregadas + "\n";
 		response += "ciudades = " + this.listaCiudadesAgregadas.size() + " / " + this.getTotalCiudades() + "\n";
