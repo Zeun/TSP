@@ -7,33 +7,37 @@ public class TSP {
 	public static boolean agregarMejorVecino (Instance ins){
 		return ins.agregarMejorVecino();
 	}
-	
 	public static boolean agregarPeorVecino (Instance ins){
 		return ins.agregarPeorVecino();
 	}
-	
+	public static boolean agregarCercaCentro (Instance ins){
+		return ins.agregarCercaCentro();
+	}
+	public static boolean agregarLejosCentro (Instance ins){
+		return ins.agregarLejosCentro();
+	}
 	public static boolean agregarCercano (Instance ins){
 		return ins.agregarCercano();
-	}
-	public static boolean agregarCentral (Instance ins){
-		return ins.agregarMediana();
 	}
 	public static boolean agregarLejano (Instance ins){
 		return ins.agregarLejano();
 	}
-	public static boolean eliminarPeor (Instance ins){
-		return ins.eliminarPeor();
-	}
-	public static boolean eliminarUltimo (Instance ins){
-		return ins.eliminarUltimo();
-	}
-	public static boolean swap (Instance ins){
-		return ins.swap();
+	public static boolean invertir (Instance ins){
+		return ins.invertir();
 	}
 	public static boolean opt2 (Instance ins){
 		return ins.opt2();
+	}	
+	public static boolean eliminarPeorArco (Instance ins){
+		return ins.eliminarPeorArco();
 	}
-	public static boolean inverse (Instance ins){
-		return ins.inverse();
+	public static boolean eliminarPeorNodoi (Instance ins){
+		return ins.eliminarPeorNodoi();
+	}
+	public static boolean eliminarPeorNodoj (Instance ins){
+		return ins.eliminarPeorNodoj();
+	}
+	public static boolean eliminarUltimo (Instance ins){
+		return ins.eliminarUltimo();
 	}
 }

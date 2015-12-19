@@ -12,7 +12,7 @@ import ec.util.Parameter;
 
 public class AgregarMejorVecino extends GPNode {
 	
-	private static final long serialVersionUID = -3651324673869893235L;
+	private static final long serialVersionUID = 2651165536899276884L;
 
 	public String toString() { return "AMejorVec"; }
 	

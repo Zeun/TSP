@@ -10,15 +10,15 @@ import ec.gp.GPIndividual;
 import ec.gp.GPNode;
 import ec.util.Parameter;
 
-public class Swap extends GPNode {
+public class EliminarPeorNodoj extends GPNode {
 
-	private static final long serialVersionUID = 1234567795794857335L;
-	
-	public String toString() { return "Swap"; }
+	private static final long serialVersionUID = -1006017923242904994L;
+
+	public String toString() { return "EPeorNodoJ"; }
 	
 	public void checkConstraints (
-		final EvolutionState state, final int tree,
-		final GPIndividual typicalIndividual, final Parameter individualBase) {      
+			final EvolutionState state, final int tree,
+			final GPIndividual typicalIndividual, final Parameter individualBase) {
 		
 		super.checkConstraints(state, tree, typicalIndividual, individualBase);
         if (children.length != 0) {
@@ -31,7 +31,7 @@ public class Swap extends GPNode {
 			final GPData input, final ADFStack stack,
 			final GPIndividual individual, final Problem problem) {
 		
-		TSPData tspData = (TSPData) input;		
-		tspData.setResult(TSP.swap(tspData.getInstance()));
+		TSPData tspData = (TSPData) input;
+		tspData.setResult(TSP.eliminarPeorNodoj(tspData.getInstance()));
 	}
 }

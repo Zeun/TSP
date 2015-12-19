@@ -10,16 +10,16 @@ import ec.gp.GPIndividual;
 import ec.gp.GPNode;
 import ec.util.Parameter;
 
-public class Inverse extends GPNode {
+public class AgregarLejosCentro extends GPNode {
 
-	private static final long serialVersionUID = 6612119662143230249L;
+	private static final long serialVersionUID = -9044249819561691608L;
 
-	public String toString() { return "Inv"; }
+	public String toString() { return "ALejosCentro"; }
 	
 	public void checkConstraints (
-		final EvolutionState state, final int tree,
-		final GPIndividual typicalIndividual, final Parameter individualBase) {      
-		
+			final EvolutionState state, final int tree,
+			final GPIndividual typicalIndividual, final Parameter individualBase) {
+        
 		super.checkConstraints(state, tree, typicalIndividual, individualBase);
         if (children.length != 0) {
             state.output.error("Incorrect number of children for node " + toStringForError() + " at " + individualBase);
@@ -30,8 +30,7 @@ public class Inverse extends GPNode {
 	public void eval(final EvolutionState state, final int thread,
 			final GPData input, final ADFStack stack,
 			final GPIndividual individual, final Problem problem) {
-		
-		TSPData tspData = (TSPData) input;		
-		tspData.setResult(TSP.inverse(tspData.getInstance()));
+		TSPData tspData = (TSPData) input;
+		tspData.setResult(TSP.agregarLejosCentro(tspData.getInstance()));
 	}
 }

@@ -10,15 +10,15 @@ import ec.gp.GPIndividual;
 import ec.gp.GPNode;
 import ec.util.Parameter;
 
-public class AgregarPeorVecino extends GPNode {
-	
-	private static final long serialVersionUID = -1301921873095167605L;
+public class Invertir extends GPNode {
 
-	public String toString() { return "APeorVec"; }
+	private static final long serialVersionUID = 1234567795794857335L;
+	
+	public String toString() { return "Invertir"; }
 	
 	public void checkConstraints (
-			final EvolutionState state, final int tree,
-			final GPIndividual typicalIndividual, final Parameter individualBase) {
+		final EvolutionState state, final int tree,
+		final GPIndividual typicalIndividual, final Parameter individualBase) {      
 		
 		super.checkConstraints(state, tree, typicalIndividual, individualBase);
         if (children.length != 0) {
@@ -31,7 +31,7 @@ public class AgregarPeorVecino extends GPNode {
 			final GPData input, final ADFStack stack,
 			final GPIndividual individual, final Problem problem) {
 		
-		TSPData tspData = (TSPData) input;
-		tspData.setResult(TSP.agregarPeorVecino(tspData.getInstance()));
+		TSPData tspData = (TSPData) input;		
+		tspData.setResult(TSP.invertir(tspData.getInstance()));
 	}
 }

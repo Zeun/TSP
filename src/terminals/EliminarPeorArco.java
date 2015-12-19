@@ -10,11 +10,11 @@ import ec.gp.GPIndividual;
 import ec.gp.GPNode;
 import ec.util.Parameter;
 
-public class AgregarPeorVecino extends GPNode {
+public class EliminarPeorArco extends GPNode {
 	
-	private static final long serialVersionUID = -1301921873095167605L;
+	private static final long serialVersionUID = -3651324673869893235L;
 
-	public String toString() { return "APeorVec"; }
+	public String toString() { return "EPeorArco"; }
 	
 	public void checkConstraints (
 			final EvolutionState state, final int tree,
@@ -32,6 +32,6 @@ public class AgregarPeorVecino extends GPNode {
 			final GPIndividual individual, final Problem problem) {
 		
 		TSPData tspData = (TSPData) input;
-		tspData.setResult(TSP.agregarPeorVecino(tspData.getInstance()));
+		tspData.setResult(TSP.eliminarPeorArco(tspData.getInstance()));
 	}
 }

@@ -14,7 +14,7 @@ public class Opt2 extends GPNode {
 	
 	private static final long serialVersionUID = 4629047220929375219L;
 
-	public String toString() { return "OPT2"; }
+	public String toString() { return "2-OPT"; }
 	
 	public void checkConstraints (
 		final EvolutionState state, final int tree,
