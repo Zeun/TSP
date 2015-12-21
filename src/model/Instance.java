@@ -406,8 +406,8 @@ public class Instance {
 			return true;
 		}
 		
-		double peorArco = matrizCostos.get(listaCiudadesAgregadas.get(0)).get(listaCiudadesAgregadas.get(1));
-		int posicion = 0;
+		double peorArco = matrizCostos.get(listaCiudadesAgregadas.get(1)).get(listaCiudadesAgregadas.get(2));
+		int posicion = 1;
 
 		for (int i = 1; i < listaCiudadesAgregadas.size() - 1; i++) {
 			double arcoActual = matrizCostos.get(listaCiudadesAgregadas.get(i)).get(listaCiudadesAgregadas.get(i+1));
@@ -441,8 +441,8 @@ public class Instance {
 			listaCiudadesAgregadas.remove(1);
 			return true;
 		}
-		double peorArco = matrizCostos.get(listaCiudadesAgregadas.get(0)).get(listaCiudadesAgregadas.get(1));
-		int posicion = 0;
+		double peorArco = matrizCostos.get(listaCiudadesAgregadas.get(1)).get(listaCiudadesAgregadas.get(2));
+		int posicion = 1;
 
 		for (int i = 1; i < listaCiudadesAgregadas.size() - 1; i++) {
 			double arcoActual = matrizCostos.get(listaCiudadesAgregadas.get(i)).get(listaCiudadesAgregadas.get(i + 1));
@@ -451,10 +451,8 @@ public class Instance {
 				peorArco = arcoActual;
 			}
 		}
-		if (posicion != 0 ){
-			listaCiudadesDisponibles.add(listaCiudadesAgregadas.get(posicion));
-			listaCiudadesAgregadas.remove(posicion);
-		}
+		listaCiudadesDisponibles.add(listaCiudadesAgregadas.get(posicion));
+		listaCiudadesAgregadas.remove(posicion);
 		
 		return true;
 	}
@@ -464,13 +462,14 @@ public class Instance {
 	 * @return
 	 */
 	public boolean eliminarPeorNodoj() {
-		if (listaCiudadesAgregadas.size() < 2) {
+		if (listaCiudadesAgregadas.size() < 3) {
 			return false;
-		} else if (listaCiudadesAgregadas.size() == 2){
-			listaCiudadesDisponibles.add(listaCiudadesAgregadas.get(1));
-			listaCiudadesAgregadas.remove(1);
-			return true;
-		}
+		} 
+//		else if (listaCiudadesAgregadas.size() == 2){
+//			listaCiudadesDisponibles.add(listaCiudadesAgregadas.get(1));
+//			listaCiudadesAgregadas.remove(1);
+//			return true;
+//		}
 		double peorArco = matrizCostos.get(listaCiudadesAgregadas.get(0)).get(listaCiudadesAgregadas.get(1));
 		int posicion = 0;
 
