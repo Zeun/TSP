@@ -10,17 +10,18 @@ import ec.gp.GPIndividual;
 import ec.gp.GPNode;
 import ec.util.Parameter;
 
-public class EliminarUltimo extends GPNode {
+public class AgregarArcoMayor extends GPNode {
 
-	private static final long serialVersionUID = -4539571390960986854L;
+	private static final long serialVersionUID = -6146350771838952747L;
 
-	public String toString() { return "EUltimo"; }
+	public String toString() { return "AMayorArco"; }
 	
 	public void checkConstraints (
 			final EvolutionState state, final int tree,
 			final GPIndividual typicalIndividual, final Parameter individualBase) {
-		
+        
 		super.checkConstraints(state, tree, typicalIndividual, individualBase);
+        
         if (children.length != 0) {
             state.output.error("Incorrect number of children for node " + toStringForError() + " at " + individualBase);
         }
@@ -30,8 +31,7 @@ public class EliminarUltimo extends GPNode {
 	public void eval(final EvolutionState state, final int thread,
 			final GPData input, final ADFStack stack,
 			final GPIndividual individual, final Problem problem) {
-		
 		TSPData tspData = (TSPData) input;
-		tspData.setResult(TSP.eliminarUltimo(tspData.getInstance()));
+		tspData.setResult(TSP.agregarArcoMayor(tspData.getInstance()));
 	}
 }

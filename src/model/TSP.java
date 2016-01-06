@@ -22,6 +22,12 @@ public class TSP {
 	public static boolean agregarLejano (Instance ins){
 		return ins.agregarLejano();
 	}
+	public static boolean agregarArcoMenor (Instance ins){
+		return ins.agregarArcoMenor();
+	}
+	public static boolean agregarArcoMayor (Instance ins){
+		return ins.agregarArcoMayor();
+	}
 	public static boolean invertir (Instance ins){
 		return ins.invertir();
 	}
@@ -36,8 +42,5 @@ public class TSP {
 	}
 	public static boolean eliminarPeorNodoj (Instance ins){
 		return ins.eliminarPeorNodoj();
-	}
-	public static boolean eliminarUltimo (Instance ins){
-		return ins.eliminarUltimo();
 	}
 }
