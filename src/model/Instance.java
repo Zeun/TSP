@@ -76,6 +76,10 @@ public class Instance {
 	public boolean agregarMejorVecino() {
 		if (listaCiudadesDisponibles.size() == 0) {
 			return false;
+		} else if (listaCiudadesAgregadas.size() == 0) {
+			listaCiudadesAgregadas.add(listaCiudadesDisponibles.get(0));
+			listaCiudadesDisponibles.remove(0);
+			return true;
 		} else {
 			if (listaCiudadesDisponibles.size() == 1) {
 				listaCiudadesAgregadas.add(listaCiudadesDisponibles.get(0));
@@ -110,6 +114,10 @@ public class Instance {
 	public boolean agregarPeorVecino() {
 		if (listaCiudadesDisponibles.size() == 0) {
 			return false;
+		} else if (listaCiudadesAgregadas.size() == 0) {
+			listaCiudadesAgregadas.add(listaCiudadesDisponibles.get(0));
+			listaCiudadesDisponibles.remove(0);
+			return true;
 		} else {
 			if (listaCiudadesDisponibles.size() == 1) {
 				listaCiudadesAgregadas.add(listaCiudadesDisponibles.get(0));
@@ -137,7 +145,7 @@ public class Instance {
 	}
 	
 	/**
-	 * Agrego el vecino más cercano
+	 * Agrego el vecino más cercano al centro 
 	 * @return verdadero si puede agregar una ciudad; falso cc.
 	 */
 	public boolean agregarCercaCentro() {
@@ -162,7 +170,7 @@ public class Instance {
 	}
 
 	/**
-	 * Agrego el vecino más lejano
+	 * Agrego el vecino más lejano al centro
 	 * @return verdadero si puede agregar una ciudad; falso cc.
 	 */
 	public boolean agregarLejosCentro() {
@@ -198,7 +206,11 @@ public class Instance {
 	public boolean agregarCercano() {
 		if (listaCiudadesDisponibles.size() == 0) {
 			return false;
-		} else {
+		} else if (listaCiudadesAgregadas.size() == 0) {
+			listaCiudadesAgregadas.add(listaCiudadesDisponibles.get(0));
+			listaCiudadesDisponibles.remove(0);
+			return true;
+		}  else {
 			
 			double menorArco = matrizCostos.get(listaCiudadesAgregadas.get(0)).get(listaCiudadesDisponibles.get(0));
 			int nodo_i = 0;
@@ -230,6 +242,10 @@ public class Instance {
 	public boolean agregarLejano() {
 		if (listaCiudadesDisponibles.size() == 0) {
 			return false;
+		} else if (listaCiudadesAgregadas.size() == 0) {
+			listaCiudadesAgregadas.add(listaCiudadesDisponibles.get(0));
+			listaCiudadesDisponibles.remove(0);
+			return true;
 		} else {
 			
 			double mayorArco = matrizCostos.get(listaCiudadesAgregadas.get(0)).get(listaCiudadesDisponibles.get(0));
@@ -263,7 +279,7 @@ public class Instance {
 	public boolean agregarArcoMenor() {
 		if (listaCiudadesDisponibles.size() == 0) {
 			return false;
-		} else if (listaCiudadesAgregadas.size() == 1) {
+		} else if (listaCiudadesAgregadas.size() <= 1) {
 			agregarMejorVecino();
 			return true;
 		} else {			
@@ -315,7 +331,7 @@ public class Instance {
 	public boolean agregarArcoMayor() {
 		if (listaCiudadesDisponibles.size() == 0) {
 			return false;
-		} else if (listaCiudadesAgregadas.size() == 1) {
+		} else if (listaCiudadesAgregadas.size() <= 1) {
 			agregarPeorVecino();
 			return true;
 		} else {			
@@ -407,32 +423,31 @@ public class Instance {
 	}
 
 	/**
-	 * Cambia el orden de las ciudades de la siguiente forma:
-	 * la primera con la última, la segunda con la penúltima, etc.
+	 * Cambia el orden de las ciudades de la siguiente forma sólo si produce una
+	 * mejora: la primera con la última, la segunda con la penúltima, etc.
 	 * @return verdaro si produce mejora, falso cc
 	 */
 	public boolean invertir(){
-		if (listaCiudadesAgregadas.size() < 3) {
+		if (listaCiudadesAgregadas.size() < 2) {
 			return false;
 		}
 		double costo_inicial = costo(listaCiudadesAgregadas);
 		double costo_antes = costo_inicial;
 		double costo_final = costo_inicial;
-		int nodoCentroCircuito,
-			numIteraciones = (listaCiudadesAgregadas.size() -1 )/ 2;
+		int nodoCentroCircuito, 
+			numIteraciones = (listaCiudadesAgregadas.size()) / 2;
 		if (listaCiudadesAgregadas.size() % 2 == 0){
 			nodoCentroCircuito = -1;
 		} else {
 			nodoCentroCircuito = listaCiudadesAgregadas.size() / 2;
 		}
-		
-		for (int i = 1; i < numIteraciones; i++) {
+		for (int i = 0; i < numIteraciones; i++) {
 			if (i != nodoCentroCircuito) {
 				ArrayList<Integer> LTemp = new ArrayList<Integer>(listaCiudadesAgregadas);
-				Collections.swap(LTemp, i, LTemp.size() - i);
+				Collections.swap(LTemp, i, LTemp.size() - i - 1);
 				costo_final = costo(LTemp);
 				if (costo_final < costo_antes) {
-					Collections.swap(listaCiudadesAgregadas, i, listaCiudadesAgregadas.size() - i);
+					Collections.swap(listaCiudadesAgregadas, i, listaCiudadesAgregadas.size() - i - 1);
 					costo_antes = costo_final;
 				}
 
@@ -452,20 +467,20 @@ public class Instance {
 	 * @return
 	 */
 	public boolean eliminarPeorArco() {
-		if (listaCiudadesAgregadas.size() < 3) {
+		if (listaCiudadesAgregadas.size() < 2) {
 			return false;
-		} else if (listaCiudadesAgregadas.size() == 3) {
+		} else if (listaCiudadesAgregadas.size() == 2) {
+			listaCiudadesDisponibles.add(listaCiudadesAgregadas.get(0));
 			listaCiudadesDisponibles.add(listaCiudadesAgregadas.get(1));
-			listaCiudadesDisponibles.add(listaCiudadesAgregadas.get(2));
-			listaCiudadesAgregadas.remove(1);
-			listaCiudadesAgregadas.remove(1);
+			listaCiudadesAgregadas.remove(0);
+			listaCiudadesAgregadas.remove(0);
 			return true;
 		}
 
-		double peorArco = matrizCostos.get(listaCiudadesAgregadas.get(1)).get(listaCiudadesAgregadas.get(2));
-		int posicion = 1;
+		double peorArco = matrizCostos.get(listaCiudadesAgregadas.get(0)).get(listaCiudadesAgregadas.get(1));
+		int posicion = 0;
 
-		for (int i = 1; i < listaCiudadesAgregadas.size() - 1; i++) {
+		for (int i = 0; i < listaCiudadesAgregadas.size() - 1; i++) {
 			double arcoActual = matrizCostos.get(listaCiudadesAgregadas.get(i)).get(listaCiudadesAgregadas.get(i + 1));
 			if (peorArco < arcoActual) {
 				posicion = i;
@@ -485,13 +500,17 @@ public class Instance {
 	 * @return
 	 */
 	public boolean eliminarPeorNodoi() {
-		if (listaCiudadesAgregadas.size() <= 2) {
+		if (listaCiudadesAgregadas.size() == 0) {
 			return false;
+		} else if (listaCiudadesAgregadas.size() <= 2) {
+			listaCiudadesDisponibles.add(listaCiudadesAgregadas.get(0));
+			listaCiudadesAgregadas.remove(0);
+			return true;
 		}
-		double peorArco = matrizCostos.get(listaCiudadesAgregadas.get(1)).get(listaCiudadesAgregadas.get(2));
-		int posicion = 1;
+		double peorArco = matrizCostos.get(listaCiudadesAgregadas.get(0)).get(listaCiudadesAgregadas.get(1));
+		int posicion = 0;
 
-		for (int i = 1; i < listaCiudadesAgregadas.size() - 1; i++) {
+		for (int i = 0; i < listaCiudadesAgregadas.size() - 1; i++) {
 			double arcoActual = matrizCostos.get(listaCiudadesAgregadas.get(i)).get(listaCiudadesAgregadas.get(i + 1));
 			if (peorArco < arcoActual) {
 				posicion = i;
@@ -519,7 +538,7 @@ public class Instance {
 		double peorArco = matrizCostos.get(listaCiudadesAgregadas.get(0)).get(listaCiudadesAgregadas.get(1));
 		int posicion = 0;
 
-		for (int i = 1; i < listaCiudadesAgregadas.size() - 1; i++) {
+		for (int i = 0; i < listaCiudadesAgregadas.size() - 1; i++) {
 			double arcoActual = matrizCostos.get(listaCiudadesAgregadas.get(i)).get(listaCiudadesAgregadas.get(i + 1));
 			if (peorArco < arcoActual) {
 				posicion = i;
@@ -574,44 +593,48 @@ public class Instance {
 		return response;
 	}
 
-	public boolean isNew(){
-		if(listaCiudadesAgregadas.size()>1){
-			return false;
-		}else{
-			return true;
-		}
-	}
-
 	/**
-	 * 
+	 * Muestra el número de ciudades del circuito
 	 * @return número de ciudades
 	 */
 	public int getTotalCiudades() {
 		return totalCiudades;
 	}
-
+	
+	/**
+	 * Muestra la matriz de distancias de todos los nodos del circuito
+	 * @return matriz de distancias
+	 */
 	public ArrayList<ArrayList<Double>> getMatrizCostos() {
 		return matrizCostos;
 	}
-
+	
+	/**
+	 * Muestra la lista de ciudades agregadas al circuito
+	 * @return lista de ciudades agregadas
+	 */
 	public ArrayList<Integer> getListaCiudadesAgregadas() {
 		return listaCiudadesAgregadas;
 	}
-
+	
+	/**
+	 * Muestra la lista de ciudades disponibles del circuito
+	 * @return lista de ciudades disponibles
+	 */
 	public ArrayList<Integer> getListaCiudadesDisponibles(){
 		return listaCiudadesDisponibles;
 	}
 	
 	/**
-	 * 
-	 * @return óptimo instancia
+	 * Muestra el valor óptimo del circuito
+	 * @return óptimo
 	 */
 	public int getOptimo(){
 		return mejorResultado;
 	}
 	
 	/**
-	 * 
+	 * Muestra el nombre de la instancia a evaluar
 	 * @return nombre instancia
 	 */
 	public String getNombreInstancia(){
@@ -619,7 +642,7 @@ public class Instance {
 	}
 	
 	/**
-	 * 
+	 * Muestra el peor arco de la instancia
 	 * @return peor arco de la instancia
 	 */
 	public double getWorstEdge(){
